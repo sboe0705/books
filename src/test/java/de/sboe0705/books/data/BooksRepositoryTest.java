@@ -1,7 +1,8 @@
 package de.sboe0705.books.data;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,28 +25,72 @@ class BooksRepositoryTest {
 	private BooksController booksController;
 
 	@Test
-	void testUninitialized() throws Exception {
+	void testUninitializedController() throws Exception {
 		Assertions.assertThat(booksController).isNull();
 	}
 
 	@Test
 	@Sql({ "/testdata.sql" })
-	void testSchemaAndCommonCrudMethods() throws Exception {
-		Assertions.assertThat(underTest.count()).isEqualTo(10);
+	void testFindById() throws Exception {
+		// given
+		long bookId = underTest.findAll().iterator().next().getId();
 
+		// when
+		Optional<Book> bookOptional = underTest.findById(bookId);
+
+		// then
+		Assertions.assertThat(bookOptional) //
+				.isPresent() //
+				.get() //
+				.extracting(Book::getId, Book::getTitle, Book::getAuthor) //
+				.containsExactly(bookId, "Jim Knopf und Lukas der Lokomotivführer", "Michael Ende");
+	}
+
+	@Test
+	@Sql({ "/testdata.sql" })
+	void testFindAllById() throws Exception {
+		// given
+		Iterator<Book> bookIterator = underTest.findAll().iterator();
+		long bookId1 = bookIterator.next().getId();
+		long bookId2 = bookIterator.next().getId();
+
+		// when
+		Iterable<Book> books = underTest.findAllById(List.of(bookId1, bookId2));
+
+		// then
+		Assertions.assertThat(books) //
+				.hasSize(2).extracting(Book::getId, Book::getTitle, Book::getAuthor) //
+				.containsExactly( //
+						Assertions.tuple(bookId1, "Jim Knopf und Lukas der Lokomotivführer", "Michael Ende"), //
+						Assertions.tuple(bookId2, "Momo", "Michael Ende") //
+				);
+	}
+
+	@Test
+	@Sql({ "/testdata.sql" })
+	void testDelete() {
+		// given
+		long count = underTest.count();
+		long bookId = underTest.findAll().iterator().next().getId();
+
+		// when
+		underTest.deleteById(bookId);
+
+		// then
+		Assertions.assertThat(underTest.count()).isEqualTo(count - 1);
+	}
+
+	@Test
+	void testSave() throws Exception {
 		Book book = new Book();
 		book.setAuthor("Robert Galbraith");
 		book.setTitle("Der Ruf des Kuckucks"); // 2013
+
+		// when
 		underTest.save(book);
+
+		// then
 		Assertions.assertThat(book.getId()).isNotNull();
-
-		Assertions.assertThat(underTest.count()).isEqualTo(11);
-
-		underTest.deleteById(book.getId());
-
-		List<Book> books = new ArrayList<>();
-		underTest.findAll().forEach(books::add);
-		Assertions.assertThat(books).hasSize(10);
 	}
 
 }

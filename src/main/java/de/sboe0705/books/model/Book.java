@@ -1,5 +1,6 @@
 package de.sboe0705.books.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,8 +13,10 @@ public class Book {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private long id;
 
+	@Column(nullable = false)
 	private String title;
 
+	@Column(nullable = false)
 	private String author;
 
 	public long getId() {
