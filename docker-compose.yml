@@ -14,7 +14,7 @@ services:
     ports:
       - 8082:8080
   books-db:
-    image: 'postgres:16'
+    image: 'postgres:16-alpine'
     container_name: books-db
     environment:
       - POSTGRES_USER=compose-postgres
