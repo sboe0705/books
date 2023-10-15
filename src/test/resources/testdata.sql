@@ -8,4 +8,3 @@ INSERT INTO book (id, author, title) VALUES ((VALUES NEXT VALUE FOR book_seq), '
 INSERT INTO book (id, author, title) VALUES ((VALUES NEXT VALUE FOR book_seq), 'Joanne K. Rowling', 'Harry Potter und der Orden des Phönix'); --2003
 INSERT INTO book (id, author, title) VALUES ((VALUES NEXT VALUE FOR book_seq), 'Joanne K. Rowling', 'Harry Potter und der Halbblutprinz'); --2005
 INSERT INTO book (id, author, title) VALUES ((VALUES NEXT VALUE FOR book_seq), 'Joanne K. Rowling', 'Harry Potter und die Heiligtümer des Todes'); --2007
-
