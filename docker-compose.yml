@@ -8,19 +8,22 @@ services:
       books-db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://books-db:5432/compose-postgres
-      - SPRING_DATASOURCE_USERNAME=compose-postgres
-      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://books-db:5432/books-db
+      - SPRING_DATASOURCE_USERNAME=books-db-user
+      - SPRING_DATASOURCE_PASSWORD=books-db-password
     ports:
       - 8082:8080
   books-db:
     image: 'postgres:16-alpine'
     container_name: books-db
     environment:
-      - POSTGRES_USER=compose-postgres
-      - POSTGRES_PASSWORD=compose-postgres
+      - POSTGRES_DB=books-db
+      - POSTGRES_USER=books-db-user
+      - POSTGRES_PASSWORD=books-db-password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U compose-postgres"]
+      test: ["CMD-SHELL", "pg_isready -d books-db -U books-db-user"]
       interval: 10s
       timeout: 5s
       retries: 5
+    ports:
+      - 5434:5432
